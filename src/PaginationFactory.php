@@ -3,9 +3,9 @@
 namespace TSK\ResultSetPaginator;
 
 use Exception;
-use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator
-use TSK\ResultSetPaginator\Paginator\PdoResultSetPaginator
-use TSK\ResultSetPaginator\Paginator\MysqliResultSetPaginator
+use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator;
+use TSK\ResultSetPaginator\MySQL\PdoResultSetPaginator;
+use TSK\ResultSetPaginator\MySQL\MysqliResultSetPaginator;
 
 class PaginationFactory
 {

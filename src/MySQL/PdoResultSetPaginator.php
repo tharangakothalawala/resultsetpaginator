@@ -4,6 +4,7 @@ namespace TSK\ResultSetPaginator\MySQL;
 
 use PDO;
 use PDOStatement;
+use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator;
 
 class PdoResultSetPaginator extends AbstractResultSetPaginator
 {
