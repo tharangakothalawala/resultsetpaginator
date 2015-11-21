@@ -1,6 +1,6 @@
 <?php
 /**
- * PdoResultSetPaginator.php
+ * MySQLiResultSetPaginator.php
  *
  * @author Tharanga S Kothalawala <tharanga.kothalawala@gmail.com>
  * @since 21-11-2015
@@ -8,14 +8,14 @@
 
 namespace TSK\ResultSetPaginator\MySQL;
 
-use PDO;
-use PDOStatement;
+use Exception;
+use mysqli;
 use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator;
 
-class PdoResultSetPaginator extends AbstractResultSetPaginator
+class MySQLiResultSetPaginator extends AbstractResultSetPaginator
 {
 	/**
-	 * @var PDO $databaseConnection
+	 * @var mysqli $databaseConnection
 	 */
 	protected $databaseConnection = null;
 
@@ -27,11 +27,11 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
 	/**
 	 * Constructor
 	 *
-	 * @param PDO $databaseConnection
+	 * @param mysqli $databaseConnection
 	 * @param integer $offset
 	 * @param integer $limit
 	 */
-	public function __construct(PDO $databaseConnection, $offset, $limit)
+	public function __construct(mysqli $databaseConnection, $offset, $limit)
 	{
 		$this->databaseConnection = $databaseConnection;
 		$this->offset = $offset;
@@ -43,7 +43,7 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
 	/**
 	 * @param string $sql sql statement
 	 *
-	 * @return PDOStatement
+	 * @return mysqli_result
 	 */
 	public function query($sql)
 	{
@@ -59,10 +59,14 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
 			$sql = 'SELECT SQL_CALC_FOUND_ROWS ' . substr($sql, 6, strlen($sql));
 		}
 
-		$stmt = $this->databaseConnection->query($sql);
+		$result = $this->databaseConnection->query($sql);
+		if (!empty($this->databaseConnection->error)) {
+			throw new Exception($this->databaseConnection->error);
+		}
+
 		$this->setFoundRows();
 
-		return $stmt;
+		return $result;
 	}
 
 	/**
@@ -79,7 +83,7 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
 	protected function setFoundRows()
 	{
 		/** @var PDOStatement $stmt */
-		$stmt = $this->databaseConnection->query('SELECT FOUND_ROWS() AS `found_rows`');
-		$this->foundRows = (int) $stmt->fetch(\PDO::FETCH_COLUMN);
+		$result = $this->databaseConnection->query('SELECT FOUND_ROWS() AS `found_rows`');
+		$this->foundRows = (int) $result->fetch_object()->found_rows;
 	}
 }

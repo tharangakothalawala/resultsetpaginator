@@ -1,4 +1,10 @@
 <?php
+/**
+ * AbstractResultSetPaginator.php
+ *
+ * @author Tharanga S Kothalawala <tharanga.kothalawala@gmail.com>
+ * @since 21-11-2015
+ */
 
 namespace TSK\ResultSetPaginator\Paginator;
 
@@ -185,12 +191,12 @@ abstract class AbstractResultSetPaginator
 	}
 
 	/**
-	 * @return PDOStatement
+	 * @return PDOStatement|mysqli_result
 	 */
 	public abstract function query($sql);
 
 	/**
-	 * set the limit clause
+	 * set the limit clause using the current offset and limit
 	 */
 	protected abstract function setLimitClause();
 

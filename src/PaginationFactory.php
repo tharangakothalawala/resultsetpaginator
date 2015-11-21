@@ -1,11 +1,17 @@
 <?php
+/**
+ * PaginationFactory.php
+ *
+ * @author Tharanga S Kothalawala <tharanga.kothalawala@gmail.com>
+ * @since 21-11-2015
+ */
 
 namespace TSK\ResultSetPaginator;
 
 use Exception;
 use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator;
 use TSK\ResultSetPaginator\MySQL\PdoResultSetPaginator;
-use TSK\ResultSetPaginator\MySQL\MysqliResultSetPaginator;
+use TSK\ResultSetPaginator\MySQL\MySQLiResultSetPaginator;
 
 class PaginationFactory
 {
@@ -38,7 +44,7 @@ class PaginationFactory
 				break;
 
 			case 'mysqli':
-				$this->paginator = new MysqliResultSetPaginator($databaseConnectionObject, $offset, $limit);
+				$this->paginator = new MySQLiResultSetPaginator($databaseConnectionObject, $offset, $limit);
 				$this->paginator->setCurrentPage($page);
 				break;
 
