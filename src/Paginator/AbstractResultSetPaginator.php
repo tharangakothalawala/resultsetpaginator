@@ -178,7 +178,7 @@ abstract class AbstractResultSetPaginator
 				$pagination[] = array('isCurrentPage' => false, 'pageNumber' => $totalpages, 'displayValue' => '>>');
 			}
 		} else {
-			$pagination[] = array('isCurrentPage' => true, 'pageNumber' => $totalpages, 'displayValue' => '1');
+			$pagination[] = array('isCurrentPage' => true, 'pageNumber' => 1, 'displayValue' => '1');
 		}
 
 		return $pagination;
