@@ -1,0 +1,19 @@
+{
+    "name": "tharangakothalawala/resultsetpaginator",
+    "description": "Simple pagination module where it accepts a database connection to provide pagination support",
+    "authors": [
+        {
+            "name": "Tharanga Kothalawala",
+            "email": "tharanga.kothalawala@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php" : ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "TSK\\ResultSetPaginator\\": "src/"
+        }
+    }
+}
