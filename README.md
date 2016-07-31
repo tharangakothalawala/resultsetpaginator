@@ -1,6 +1,8 @@
 # ResultSet Paginator
 This is a simple set of classes that provides you pagination data for a given query. This executes a query using a given database connection (PDO, mysqli).
 
+[![Build Status](https://travis-ci.org/tharangakothalawala/resultsetpaginator.svg?branch=master)](https://travis-ci.org/tharangakothalawala/resultsetpaginator)
+
 ## Usage Examples
 
 
@@ -35,7 +37,7 @@ echo $pagination;
 ##### The above example will produce the below output:
 << < 1 ~~2~~ 3 4 5 > >>
 
-### Example usage with a mysqli connection (ex: Laravel)
+### Example usage with a mysqli connection
 ```php
 use TSK\ResultSetPaginator\PaginationFactory;
 
