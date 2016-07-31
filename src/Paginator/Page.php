@@ -44,7 +44,7 @@ class Page
     /**
      * @return mixed
      */
-    public function getIsCurrentPage()
+    public function isCurrentPage()
     {
         return $this->isCurrentPage;
     }

@@ -126,7 +126,7 @@ abstract class AbstractResultSetPaginator
 
     /**
      * Get the pagination data. Using this data, you can build the pagination bar according to how you need
-     * @return array
+     * @return Page[]
      * @throws Exception
      */
     public function getPagination()

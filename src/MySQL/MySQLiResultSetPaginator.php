@@ -89,7 +89,6 @@ class MySQLiResultSetPaginator extends AbstractResultSetPaginator
      */
     protected function setFoundRows()
     {
-        /** @var PDOStatement $stmt */
         $result = $this->databaseConnection->query('SELECT FOUND_ROWS() AS `foundRows`');
         $this->foundRows = (int) $result->fetch_object()->foundRows;
     }

@@ -54,12 +54,12 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
     {
         $sql = trim($sql);
 
-        // inject LIMIT if not set explicitely
+        // inject LIMIT if not set explicitly
         if (strpos(strtoupper($sql), 'LIMIT') === false) {
             $sql .= ' ' . $this->getLimitClause();
         }
 
-        // inject SQL_CALC_FOUND_ROWS if not set explicitely
+        // inject SQL_CALC_FOUND_ROWS if not set explicitly
         if (strpos(strtoupper($sql), 'SQL_CALC_FOUND_ROWS') === false) {
             $sql = 'SELECT SQL_CALC_FOUND_ROWS ' . substr($sql, 6, strlen($sql));
         }
@@ -83,8 +83,7 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
      */
     protected function setFoundRows()
     {
-        /** @var PDOStatement $stmt */
         $stmt = $this->databaseConnection->query('SELECT FOUND_ROWS() AS `foundRows`');
-        $this->foundRows = (int) $stmt->fetch(\PDO::FETCH_COLUMN);
+        $this->foundRows = (int) $stmt->fetch(PDO::FETCH_COLUMN);
     }
 }
