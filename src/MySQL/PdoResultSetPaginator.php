@@ -12,6 +12,10 @@ use PDO;
 use PDOStatement;
 use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator;
 
+/**
+ * Class PdoResultSetPaginator
+ * @package TSK\ResultSetPaginator\MySQL
+ */
 class PdoResultSetPaginator extends AbstractResultSetPaginator
 {
     /**
@@ -28,15 +32,16 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
      * Constructor
      *
      * @param PDO $databaseConnection
-     * @param integer $offset
-     * @param integer $limit
+     * @param int $page
+     * @param int $limit
      */
-    public function __construct(PDO $databaseConnection, $offset, $limit)
+    public function __construct(PDO $databaseConnection, $page, $limit)
     {
         $this->databaseConnection = $databaseConnection;
-        $this->offset = $offset;
+        $this->currentPage = $page;
         $this->limit = $limit;
 
+        $this->offset = $this->getOffset();
         $this->setLimitClause();
     }
 
@@ -79,7 +84,7 @@ class PdoResultSetPaginator extends AbstractResultSetPaginator
     protected function setFoundRows()
     {
         /** @var PDOStatement $stmt */
-        $stmt = $this->databaseConnection->query('SELECT FOUND_ROWS() AS `found_rows`');
+        $stmt = $this->databaseConnection->query('SELECT FOUND_ROWS() AS `foundRows`');
         $this->foundRows = (int) $stmt->fetch(\PDO::FETCH_COLUMN);
     }
 }

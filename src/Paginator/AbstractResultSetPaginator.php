@@ -9,8 +9,13 @@
 namespace TSK\ResultSetPaginator\Paginator;
 
 use Exception;
+use mysqli_result;
 use PDOStatement;
 
+/**
+ * Class AbstractResultSetPaginator
+ * @package TSK\ResultSetPaginator\Paginator
+ */
 abstract class AbstractResultSetPaginator
 {
     const DEFAULT_VISIBLE_RESULT_COUNT = 10;
@@ -26,24 +31,24 @@ abstract class AbstractResultSetPaginator
      * ex: if the value is 3 and you are on page 13,
      *     it will show << < 10 11 12 and 14 15 16 > >>
      *
-     * @var integer $visiblePaginationRange
+     * @var int $visiblePaginationRange
      */
     protected $visiblePaginationRange = self::DEFAULT_VISIBLE_PAGINATION_RANGE;
 
     /**
      * Current page
      *
-     * @var integer $currentPage
+     * @var int $currentPage
      */
     protected $currentPage = null;
 
     /**
-     * @var integer $offset
+     * @var int $offset
      */
     protected $offset = 0;
 
     /**
-     * @var integer $limit
+     * @var int $limit
      */
     protected $limit = self::DEFAULT_VISIBLE_RESULT_COUNT;
 
@@ -53,14 +58,14 @@ abstract class AbstractResultSetPaginator
     protected $limitClause = null;
 
     /**
-     * @var integer $foundRows
+     * @var int $foundRows
      */
     protected $foundRows = null;
 
     /**
      * Get the current page
      *
-     * @return integer
+     * @return int
      */
     public function getCurrentPage()
     {
@@ -68,19 +73,9 @@ abstract class AbstractResultSetPaginator
     }
 
     /**
-     * Set the current page in order create the pagination data
-     *
-     * @param integer $currentPage
-     */
-    public function setCurrentPage($currentPage)
-    {
-        $this->currentPage = (int) $currentPage;
-    }
-
-    /**
      * Get the the number of visible results per page
      *
-     * @return integer
+     * @return int
      */
     public function getLimit()
     {
@@ -90,7 +85,7 @@ abstract class AbstractResultSetPaginator
     /**
      * Get the number of links shown within the pagination links
      *
-     * @return integer
+     * @return int
      */
     public function getVisiblePaginationRange()
     {
@@ -102,7 +97,7 @@ abstract class AbstractResultSetPaginator
      * ex: if the value is 3 and you are on page 13,
      *     it will show << < 10 11 12 and 14 15 16 > >>
      *
-     * @param integer $visiblePaginationRange
+     * @param int $visiblePaginationRange
      */
     public function setVisiblePaginationRange($visiblePaginationRange)
     {
@@ -122,7 +117,7 @@ abstract class AbstractResultSetPaginator
     /**
      * get the total number of results
      *
-     * @return integer
+     * @return int
      */
     public function getFoundRows()
     {
@@ -131,8 +126,8 @@ abstract class AbstractResultSetPaginator
 
     /**
      * Get the pagination data. Using this data, you can build the pagination bar according to how you need
-     *
      * @return array
+     * @throws Exception
      */
     public function getPagination()
     {
@@ -141,56 +136,68 @@ abstract class AbstractResultSetPaginator
         }
 
         $pagination = array();
-        if ($this->foundRows > $this->limit) {
-            // find out total pages
-            $totalpages = ceil($this->foundRows / $this->limit);
 
-            // if not on page 1, don't show back links
-            if ($this->currentPage > 1) {
-               // show << link to go back to page 1
-               $pagination[] = array('isCurrentPage' => false, 'pageNumber' => 1, 'displayValue' => '<<');
-               // get previous page num
-               $prevpage = $this->currentPage - 1;
-               // show < link to go back to 1 page
-               $pagination[] = array('isCurrentPage' => false, 'pageNumber' => $prevpage, 'displayValue' => '<');
-            }
+        // if the found rows is less than the required amount, it only contain one page
+        if ($this->foundRows < $this->limit) {
+            $pagination[] = new Page(true, 1, '1');
+            return $pagination;
+        }
 
-            // loop to show links to range of pages around current page
-            for ($pageNumber = ($this->currentPage - $this->visiblePaginationRange);
-                $pageNumber < (($this->currentPage + $this->visiblePaginationRange) + 1);
-                $pageNumber++
-            ) {
-                if (($pageNumber > 0) && ($pageNumber <= $totalpages)) {
-                    if ($pageNumber == $this->currentPage) {
-                        $pagination[] = array(
-                            'isCurrentPage' => true,
-                            'pageNumber' => $pageNumber,
-                            'displayValue' => $pageNumber
-                        );
-                    } else {
-                        $pagination[] = array(
-                            'isCurrentPage' => false,
-                            'pageNumber' => $pageNumber,
-                            'displayValue' => $pageNumber
-                        );
-                    }
+        // find out total pages
+        $totalPages = ceil($this->foundRows / $this->limit);
+
+        // if not on page 1, don't show back links
+        if ($this->currentPage > 1) {
+            // show << link to go back to page 1
+            $pagination[] = new Page(false, 1, '<<');
+            // get previous page num
+            $previousPage = $this->currentPage - 1;
+            // show < link to go back to 1 page
+            $pagination[] = new Page(false, $previousPage, '<');
+        }
+
+        // loop to show links to range of pages around current page
+        for ($pageNumber = ($this->currentPage - $this->visiblePaginationRange);
+            $pageNumber < (($this->currentPage + $this->visiblePaginationRange) + 1);
+            $pageNumber++
+        ) {
+            if (($pageNumber > 0) && ($pageNumber <= $totalPages)) {
+                if ($pageNumber == $this->currentPage) {
+                    $pagination[] = new Page(true, $pageNumber, $pageNumber);
+                } else {
+                    $pagination[] = new Page(false, $pageNumber, $pageNumber);
                 }
             }
+        }
 
-            // if not on last page, show forward and last page links
-            if ($this->currentPage != $totalpages) {
-               $nextpage = $this->currentPage + 1;
-                $pagination[] = array('isCurrentPage' => false, 'pageNumber' => $nextpage, 'displayValue' => '>');
-                $pagination[] = array('isCurrentPage' => false, 'pageNumber' => $totalpages, 'displayValue' => '>>');
-            }
-        } else {
-            $pagination[] = array('isCurrentPage' => true, 'pageNumber' => 1, 'displayValue' => '1');
+        // if not on last page, show forward and last page links
+        if ($this->currentPage != $totalPages) {
+            $nextPage = $this->currentPage + 1;
+            $pagination[] = new Page(false, $nextPage, '>');
+            $pagination[] = new Page(false, $totalPages, '>>');
         }
 
         return $pagination;
     }
 
+    protected function getOffset()
+    {
+        if (empty($this->currentPage)) {
+            throw new Exception(_('Current page is not set'));
+        }
+
+        $offset = 0;
+        if (intval($this->currentPage) > 1) {
+            $offset = ($this->currentPage - 1) * $this->limit;
+        } elseif (intval($this->currentPage) < 1) {
+            throw new Exception(_('Invalid page number'));
+        }
+
+        return $offset;
+    }
+
     /**
+     * @param $sql
      * @return PDOStatement|mysqli_result
      */
     public abstract function query($sql);

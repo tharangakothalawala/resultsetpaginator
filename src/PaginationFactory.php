@@ -30,23 +30,14 @@ class PaginationFactory
      */
     public function __construct($databaseConnectionObject, $page, $limit)
     {
-        $offset = 0;
-        if (intval($page) > 1) {
-            $offset = ($page - 1) * $limit;
-        } elseif (intval($page) < 1) {
-            throw new Exception(_('Invalid page number'));
-        }
-
         $class = get_class($databaseConnectionObject);
         switch ($class) {
             case 'PDO':
-                $this->paginator = new PdoResultSetPaginator($databaseConnectionObject, $offset, $limit);
-                $this->paginator->setCurrentPage($page);
+                $this->paginator = new PdoResultSetPaginator($databaseConnectionObject, $page, $limit);
                 break;
 
             case 'mysqli':
-                $this->paginator = new MySQLiResultSetPaginator($databaseConnectionObject, $offset, $limit);
-                $this->paginator->setCurrentPage($page);
+                $this->paginator = new MySQLiResultSetPaginator($databaseConnectionObject, $page, $limit);
                 break;
 
             default:
