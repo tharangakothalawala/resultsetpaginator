@@ -2,6 +2,9 @@
 This is a simple set of classes that provides you pagination data for a given query. This executes a query using a given database connection (PDO, mysqli).
 
 [![Build Status](https://travis-ci.org/tharangakothalawala/resultsetpaginator.svg?branch=master)](https://travis-ci.org/tharangakothalawala/resultsetpaginator)
+[![Total Downloads](https://poser.pugx.org/tharangakothalawala/resultsetpaginator/d/total.svg)](https://packagist.org/packages/tharangakothalawala/resultsetpaginator)
+[![Latest Stable Version](https://poser.pugx.org/tharangakothalawala/resultsetpaginator/v/stable.svg)](https://packagist.org/packages/tharangakothalawala/resultsetpaginator)
+[![License](https://poser.pugx.org/laravel/framework/license.svg)](https://packagist.org/packages/tharangakothalawala/resultsetpaginator)
 
 ## Usage Examples
 
