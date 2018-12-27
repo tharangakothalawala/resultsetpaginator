@@ -1,85 +1,59 @@
 <?php
 /**
- * AbstractResultSetPaginator.php
- *
  * @author Tharanga S Kothalawala <tharanga.kothalawala@gmail.com>
  * @since 21-11-2015
  */
 
 namespace TSK\ResultSetPaginator\Paginator;
 
-use Exception;
-use mysqli_result;
-use PDOStatement;
-
-/**
- * Class AbstractResultSetPaginator
- * @package TSK\ResultSetPaginator\Paginator
- */
-abstract class AbstractResultSetPaginator
+class PaginationProvider
 {
     const DEFAULT_VISIBLE_RESULT_COUNT = 10;
     const DEFAULT_VISIBLE_PAGINATION_RANGE = 3;
-
-    /**
-     * @var object $databaseConnection
-     */
-    protected $databaseConnection = null;
 
     /**
      * number of links to show within the pagination link bar
      * ex: if the value is 3 and you are on page 13,
      *     it will show << < 10 11 12 and 14 15 16 > >>
      *
-     * @var int $visiblePaginationRange
+     * @var int
      */
-    protected $visiblePaginationRange = self::DEFAULT_VISIBLE_PAGINATION_RANGE;
+    private $visiblePaginationRange = self::DEFAULT_VISIBLE_PAGINATION_RANGE;
 
     /**
-     * Current page
-     *
-     * @var int $currentPage
+     * @var int
      */
-    protected $currentPage = null;
+    private $currentPage;
 
     /**
-     * @var int $offset
+     * @var int
      */
-    protected $offset = 0;
+    private $limit = self::DEFAULT_VISIBLE_RESULT_COUNT;
 
     /**
-     * @var int $limit
+     * @var int
      */
-    protected $limit = self::DEFAULT_VISIBLE_RESULT_COUNT;
+    private $totalCount;
 
     /**
-     * @var string $limitClause
+     * PaginationProvider constructor.
+     * @param int $currentPage
+     * @param int $limit
+     * @param int $totalCount
      */
-    protected $limitClause = null;
-
-    /**
-     * @var int $foundRows
-     */
-    protected $foundRows = null;
-
-    /**
-     * Get the current page
-     *
-     * @return int
-     */
-    public function getCurrentPage()
+    public function __construct($currentPage, $limit, $totalCount = 0)
     {
-        return $this->currentPage;
+        $this->currentPage = $currentPage;
+        $this->limit = $limit;
+        $this->totalCount = intval($totalCount);
     }
 
     /**
-     * Get the the number of visible results per page
-     *
-     * @return int
+     * @param int $totalCount
      */
-    public function getLimit()
+    public function setTotalCount($totalCount)
     {
-        return $this->limit;
+        $this->totalCount = intval($totalCount);
     }
 
     /**
@@ -87,7 +61,7 @@ abstract class AbstractResultSetPaginator
      *
      * @return int
      */
-    public function getVisiblePaginationRange()
+    public function visiblePaginationRange()
     {
         return $this->visiblePaginationRange;
     }
@@ -101,50 +75,29 @@ abstract class AbstractResultSetPaginator
      */
     public function setVisiblePaginationRange($visiblePaginationRange)
     {
-        $this->visiblePaginationRange = (int) $visiblePaginationRange;
-    }
-
-    /**
-     * get the limit clause depending on the Paginator used
-     *
-     * @return string
-     */
-    public function getLimitClause()
-    {
-        return $this->limitClause;
-    }
-
-    /**
-     * get the total number of results
-     *
-     * @return int
-     */
-    public function getFoundRows()
-    {
-        return $this->foundRows;
+        $this->visiblePaginationRange = intval($visiblePaginationRange);
     }
 
     /**
      * Get the pagination data. Using this data, you can build the pagination bar according to how you need
      * @return Page[]
-     * @throws Exception
      */
-    public function getPagination()
+    public function pages()
     {
         if (empty($this->currentPage)) {
-            throw new Exception(_('Cannot construct the pagination without the current page'));
+            return array();
         }
 
         $pagination = array();
 
         // if the found rows is less than the required amount, it only contain one page
-        if ($this->foundRows < $this->limit) {
+        if ($this->totalCount < $this->limit) {
             $pagination[] = new Page(true, 1, '1');
             return $pagination;
         }
 
         // find out total pages
-        $totalPages = ceil($this->foundRows / $this->limit);
+        $totalPages = ceil($this->totalCount / $this->limit);
 
         // if not on page 1, don't show back links
         if ($this->currentPage > 1) {
@@ -180,35 +133,32 @@ abstract class AbstractResultSetPaginator
         return $pagination;
     }
 
-    protected function getOffset()
+    public function offset()
     {
         if (empty($this->currentPage)) {
-            throw new Exception(_('Current page is not set'));
+            return 0;
         }
 
-        $offset = 0;
         if (intval($this->currentPage) > 1) {
-            $offset = ($this->currentPage - 1) * $this->limit;
-        } elseif (intval($this->currentPage) < 1) {
-            throw new Exception(_('Invalid page number'));
+            return ($this->currentPage - 1) * $this->limit;
         }
 
-        return $offset;
+        return 0;
     }
 
     /**
-     * @param $sql
-     * @return PDOStatement|mysqli_result
+     * @return int
      */
-    public abstract function query($sql);
+    public function limit()
+    {
+        return $this->limit;
+    }
 
     /**
-     * set the limit clause using the current offset and limit
+     * @return int
      */
-    protected abstract function setLimitClause();
-
-    /**
-     * set the number of found rows as per the query ran
-     */
-    protected abstract function setFoundRows();
+    public function totalCount()
+    {
+        return $this->totalCount;
+    }
 }

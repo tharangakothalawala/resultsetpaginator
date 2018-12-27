@@ -1,7 +1,5 @@
 <?php
 /**
- * MySQLiResultSetPaginator.php
- *
  * @author Tharanga S Kothalawala <tharanga.kothalawala@gmail.com>
  * @since 21-11-2015
  */
@@ -9,26 +7,14 @@
 namespace TSK\ResultSetPaginator\MySQL;
 
 use Exception;
-use mysqli;
-use mysqli_result;
-use PDOStatement;
 use TSK\ResultSetPaginator\Paginator\AbstractResultSetPaginator;
 
-/**
- * Class MySQLiResultSetPaginator
- * @package TSK\ResultSetPaginator\MySQL
- */
-class MySQLiResultSetPaginator extends AbstractResultSetPaginator
+class TotalCountAwareResultSetPaginator extends AbstractResultSetPaginator
 {
     /**
-     * @var mysqli $databaseConnection
+     * @var int
      */
-    protected $databaseConnection = null;
-
-    /**
-     * @var string $limitClause
-     */
-    protected $limitClause = 'LIMIT %s, %s';
+    protected $totalCount = 0;
 
     /**
      * Constructor
@@ -37,14 +23,11 @@ class MySQLiResultSetPaginator extends AbstractResultSetPaginator
      * @param int $page
      * @param int $limit
      */
-    public function __construct(mysqli $databaseConnection, $page, $limit)
+    public function __construct($page, $limit, $totalCount)
     {
-        $this->databaseConnection = $databaseConnection;
         $this->currentPage = $page;
         $this->limit = $limit;
-
-        $this->offset = $this->getOffset();
-        $this->setLimitClause();
+        $this->totalCount = $totalCount;
     }
 
     /**

@@ -1,6 +1,6 @@
 {
     "name": "tharangakothalawala/resultsetpaginator",
-    "description": "Simple pagination module where it accepts a database connection to provide pagination support",
+    "description": "Simple pagination module where it accepts a database connection to provide pagination support. Also supports plain pagination.",
     "authors": [
         {
             "name": "Tharanga Kothalawala",
@@ -9,10 +9,11 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4"
+        "phpunit/phpunit": "~4.8 || ~6.0",
+        "mockery/mockery": "^0.9 || ^1.0@dev"
     },
     "autoload": {
         "psr-4": {
@@ -21,7 +22,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "TSK\\ResultSetPaginator\\Tests\\": "tests/"
+            "TSK\\ResultSetPaginator\\": "tests/"
         }
     }
 }
